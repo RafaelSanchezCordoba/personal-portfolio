@@ -10,7 +10,7 @@ const path = Astro.url.pathname;
     <nav class="ml-auto flex items-center gap-6 text-sm text-secondary">
       <a href="/" class={path === '/' ? 'text-ink' : ''}>Home</a>
       <a href="/projects" class={path.startsWith('/projects') ? 'text-ink' : ''}>Projects</a>
-      <a href={profile.cvPdfHref}>CV</a>
+      <a href={profile.cvPdfHref}>Resume</a>
       <a href={`mailto:${profile.email}`}>Contact</a>
     </nav>
   </div>
