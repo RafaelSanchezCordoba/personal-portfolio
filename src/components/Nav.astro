@@ -5,12 +5,12 @@ const path = Astro.url.pathname;
 ---
 
 <header class="border-b border-rule">
-  <div class="max-w-2xl mx-auto px-6 py-4 flex items-center">
+  <div class="max-w-3xl mx-auto px-6 py-4 flex items-center">
     <a href="/" class="font-display font-extrabold text-sm">rs</a>
     <nav class="ml-auto flex gap-6 text-sm text-secondary">
       <a href="/" class={path === '/' ? 'text-ink' : ''}>Home</a>
       <a href="/projects" class={path.startsWith('/projects') ? 'text-ink' : ''}>Projects</a>
-      <a href={profile.cvPdfHref}>CV</a>
+      <a href="/resume" class={path === '/resume' ? 'text-ink' : ''}>Resume</a>
       <a href={`mailto:${profile.email}`}>Contact</a>
     </nav>
   </div>

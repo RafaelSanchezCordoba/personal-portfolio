@@ -19,6 +19,7 @@ const projects = defineCollection({
     status: z.enum(['completed', 'in-progress', 'archived']),
     type: z.enum(['data', 'software', 'cloud', 'automation', 'university']),
     featured: z.boolean().default(false),
+    priority: z.number().optional(), // lower = shown first among featured; unset = sorted by date only
     cover: image(),
     coverAlt: z.string(),
     tech: z.array(z.enum(TECH)),

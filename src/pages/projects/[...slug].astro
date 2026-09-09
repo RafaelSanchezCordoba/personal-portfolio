@@ -28,10 +28,10 @@ const statusLabel: Record<string, string> = {
 
   <main>
     <section class="border-b border-rule">
-      <div class="max-w-2xl mx-auto px-6 py-12">
+      <div class="max-w-3xl mx-auto px-6 py-12">
         <p class="text-xs text-meta">{project.data.date.getFullYear()} · {statusLabel[project.data.status]}</p>
         <h1 class="font-display font-extrabold text-4xl mt-2 max-w-[20ch]">{project.data.title}</h1>
-        <p class="text-secondary text-[15px] leading-relaxed max-w-[56ch] mt-4">{project.data.description}</p>
+        <p class="text-secondary text-[15px] leading-relaxed text-justify max-w-[56ch] mt-4">{project.data.description}</p>
 
         <Image
           src={project.data.cover}
@@ -44,7 +44,7 @@ const statusLabel: Record<string, string> = {
     </section>
 
     <section>
-      <div class="max-w-2xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-[1fr_200px] gap-10">
+      <div class="max-w-3xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-[1fr_200px] gap-10">
         <article class="prose-project min-w-0">
           <Content />
         </article>
