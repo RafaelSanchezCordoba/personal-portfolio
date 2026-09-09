@@ -1,10 +1,16 @@
 ---
 import { profile } from '../data/cv.ts';
+
+const year = new Date().getFullYear();
 ---
 
-<footer>
-  <div class="max-w-3xl mx-auto px-6 py-5 flex text-xs text-meta">
-    <span>{profile.location}</span>
-    <a href={`mailto:${profile.email}`} class="ml-auto text-accent">{profile.email}</a>
+<footer class="border-t border-rule">
+  <div class="max-w-3xl mx-auto px-6 py-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-meta">
+    <span>{profile.location} · © {year} {profile.name}</span>
+    <div class="flex gap-5">
+      <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href={`mailto:${profile.email}`} class="text-accent">{profile.email}</a>
+    </div>
   </div>
 </footer>

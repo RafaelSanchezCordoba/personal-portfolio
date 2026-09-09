@@ -6,6 +6,8 @@ export const profile = {
   headline: "Software engineer", // TODO: final positioning, still under discussion
   location: "Aarhus, Denmark",
   email: "rafasanchezcordoba@gmail.com",
+  githubUrl: "https://github.com/RafaelSanchezCordoba",
+  linkedinUrl: "https://www.linkedin.com/in/rafael-s%C3%A1nchez-c%C3%B3rdoba/",
   summary:
     "Software Engineering graduate completing an MSc in Technology-Based Business Development at Aarhus University, with two years of experience at Siemens Energy in an international engineering environment. Experienced in translating requirements into technical solutions, data and automation, validating outputs, and coordinating across engineering, operations, and project teams. Structured, quality-focused, and proactive in solving problems and managing multiple priorities.",
   cvPdfHref: "/cv.pdf", // TODO: upload the actual PDF to /public/cv.pdf

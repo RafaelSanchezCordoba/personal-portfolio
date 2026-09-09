@@ -5,6 +5,8 @@ import Footer from '../components/Footer.astro';
 import Row from '../components/Row.astro';
 import { profile, experience, education } from '../data/cv.ts';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import profilePhoto from '../assets/profile.png';
 
 const allProjects = await getCollection('projects', ({ data }) => !data.draft);
 const featured = allProjects
@@ -21,11 +23,13 @@ const featured = allProjects
   <main>
     <section class="border-b border-rule">
       <div class="max-w-3xl mx-auto px-6 py-16 text-center">
-        <div
-          class="mx-auto mb-7 w-[82px] h-[82px] rounded-full bg-rule flex items-center justify-center text-xs text-meta shadow-[0_0_0_7px_var(--color-paper),0_0_0_8px_var(--color-rule)]"
-        >
-          photo
-        </div>
+        <Image
+          src={profilePhoto}
+          alt={profile.name}
+          width={336}
+          height={336}
+          class="mx-auto mb-7 w-28 h-28 rounded-full object-cover shadow-[0_0_0_7px_var(--color-paper),0_0_0_8px_var(--color-rule)]"
+        />
         <h1 class="font-display font-extrabold text-4xl leading-tight max-w-[16ch] mx-auto">
           Hi, I'm Rafael
         </h1>
@@ -51,7 +55,7 @@ const featured = allProjects
               <p class="font-display font-medium text-[16px]">{e.role}</p>
               <p class="text-[13px] text-muted mt-0.5">{e.org}</p>
               {e.description && e.description.length > 0 && (
-                <ul class="mt-[7px] max-w-[56ch] space-y-1.5 list-disc pl-[1.1em]">
+                <ul class="mt-[7px] space-y-1.5 list-disc pl-[1.1em]">
                   {e.description.map((line) => (
                     <li class="text-[13.5px] leading-relaxed text-justify text-secondary">{line}</li>
                   ))}
@@ -71,7 +75,7 @@ const featured = allProjects
             <Row years={e.years}>
               <p class="font-display font-medium text-[16px]">{e.program}</p>
               <p class="text-[13px] text-muted mt-0.5">{e.org}</p>
-              {e.description && <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[7px] max-w-[56ch]">{e.description}</p>}
+              {e.description && <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[7px]">{e.description}</p>}
             </Row>
           ))}
         </div>
@@ -91,7 +95,7 @@ const featured = allProjects
                 <a href={`/projects/${project.id}`} class="group flex items-baseline gap-3">
                   <div class="min-w-0">
                     <p class="font-display font-extrabold text-[21px]">{project.data.title}</p>
-                    <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[5px] max-w-[56ch]">{project.data.description}</p>
+                    <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[5px]">{project.data.description}</p>
                   </div>
                   <span class="text-accent text-[16px] ml-auto group-hover:translate-x-0.5 transition-transform">→</span>
                 </a>
