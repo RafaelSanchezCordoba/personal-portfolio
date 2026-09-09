@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# planning doc — not part of the site, mentions unreleased work
+context.md
