@@ -2,20 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { Image } from 'astro:assets';
-import { profile } from '../data/cv.ts';
+import Row from '../components/Row.astro';
+import { profile, experience, education } from '../data/cv.ts';
 import { getCollection } from 'astro:content';
 
 const allProjects = await getCollection('projects', ({ data }) => !data.draft);
 const featured = allProjects
   .filter((p) => p.data.featured)
-  .sort((a, b) => {
-    const pa = a.data.priority ?? Infinity;
-    const pb = b.data.priority ?? Infinity;
-    if (pa !== pb) return pa - pb;
-    return b.data.date.valueOf() - a.data.date.valueOf();
-  })
-  .slice(0, 3);
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <BaseLayout
@@ -39,42 +33,75 @@ const featured = allProjects
           I build and document software
         </p>
         <p class="text-secondary text-[15px] leading-relaxed max-w-[62ch] mx-auto mt-6">
-          {profile.heroTagline}
+          {profile.summary}
         </p>
         <div class="flex gap-2.5 justify-center mt-7 text-[13.5px]">
           <a href="/projects" class="bg-ink text-paper px-[18px] py-[9px]">View projects</a>
-          <a href="/resume" class="border border-rule-soft px-[18px] py-[9px]">View resume</a>
+          <a href={profile.cvPdfHref} class="border border-rule-soft px-[18px] py-[9px]">Download CV</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-b border-rule">
+      <div class="max-w-3xl mx-auto px-6 py-8">
+        <p class="text-[11px] tracking-[0.13em] uppercase text-meta">Experience</p>
+        <div class="mt-2.5">
+          {experience.map((e) => (
+            <Row years={e.years}>
+              <p class="font-display font-medium text-[16px]">{e.role}</p>
+              <p class="text-[13px] text-muted mt-0.5">{e.org}</p>
+              {e.description && e.description.length > 0 && (
+                <ul class="mt-[7px] max-w-[56ch] space-y-1.5 list-disc pl-[1.1em]">
+                  {e.description.map((line) => (
+                    <li class="text-[13.5px] leading-relaxed text-justify text-secondary">{line}</li>
+                  ))}
+                </ul>
+              )}
+            </Row>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="border-b border-rule">
+      <div class="max-w-3xl mx-auto px-6 py-8">
+        <p class="text-[11px] tracking-[0.13em] uppercase text-meta">Education</p>
+        <div class="mt-2.5">
+          {education.map((e) => (
+            <Row years={e.years}>
+              <p class="font-display font-medium text-[16px]">{e.program}</p>
+              <p class="text-[13px] text-muted mt-0.5">{e.org}</p>
+              {e.description && <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[7px] max-w-[56ch]">{e.description}</p>}
+            </Row>
+          ))}
         </div>
       </div>
     </section>
 
     {featured.length > 0 && (
-      <section>
-        <div class="max-w-3xl mx-auto px-6 py-12">
+      <section class="border-b border-rule">
+        <div class="max-w-3xl mx-auto px-6 py-8">
           <div class="flex items-baseline">
             <p class="text-[11px] tracking-[0.13em] uppercase text-meta">Selected projects</p>
-            <a href="/projects" class="text-[11px] text-accent ml-auto">All projects →</a>
+            <span class="text-[11px] text-meta ml-auto">{featured.length} featured</span>
           </div>
-
-          <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-8 gap-y-9 mt-6">
+          <div class="mt-2.5">
             {featured.map((project) => (
-              <a href={`/projects/${project.id}`} class="block">
-                <Image
-                  src={project.data.cover}
-                  alt={project.data.coverAlt}
-                  class="w-full aspect-[4/3] object-cover"
-                  widths={[320, 480, 640]}
-                  sizes="(min-width: 640px) 320px, 100vw"
-                />
-                <p class="font-display font-medium text-[17px] mt-3.5">{project.data.title}</p>
-                <p class="text-[13px] leading-relaxed text-secondary text-justify mt-1.5">{project.data.description}</p>
-                <p class="text-[12px] text-muted mt-2">{project.data.tech.join(' · ')}</p>
-              </a>
+              <Row years={String(project.data.date.getFullYear())}>
+                <a href={`/projects/${project.id}`} class="group flex items-baseline gap-3">
+                  <div class="min-w-0">
+                    <p class="font-display font-extrabold text-[21px]">{project.data.title}</p>
+                    <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[5px] max-w-[56ch]">{project.data.description}</p>
+                  </div>
+                  <span class="text-accent text-[16px] ml-auto group-hover:translate-x-0.5 transition-transform">→</span>
+                </a>
+              </Row>
             ))}
           </div>
         </div>
       </section>
     )}
+
   </main>
 
   <Footer />

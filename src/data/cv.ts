@@ -6,9 +6,6 @@ export const profile = {
   headline: "Software engineer", // TODO: final positioning, still under discussion
   location: "Aarhus, Denmark",
   email: "rafasanchezcordoba@gmail.com",
-  // Short, informal line shown on the home hero. TODO: write the real one — see the portfolio chat for rejected drafts.
-  heroTagline: "TODO — one informal line for the home hero.",
-  // Longer professional summary, shown on /resume only.
   summary:
     "Software Engineering graduate completing an MSc in Technology-Based Business Development at Aarhus University, with two years of experience at Siemens Energy in an international engineering environment. Experienced in translating requirements into technical solutions, data and automation, validating outputs, and coordinating across engineering, operations, and project teams. Structured, quality-focused, and proactive in solving problems and managing multiple priorities.",
   cvPdfHref: "/cv.pdf", // TODO: upload the actual PDF to /public/cv.pdf
