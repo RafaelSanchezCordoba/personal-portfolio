@@ -22,7 +22,7 @@ export type ExperienceEntry = {
 
 export const experience: ExperienceEntry[] = [
   {
-    years: "Aug 2024 -- Present",
+    years: "Aug 2024 - Present",
     role: "Student Assistant | Engineering Data and Technical Support",
     org: "Siemens Energy · Brande, Denmark",
     description: [
