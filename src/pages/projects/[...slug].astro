@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const statusLabel: Record<string, string> = {
+  completed: 'Completed',
+  'in-progress': 'In progress',
+  archived: 'Archived',
+};
+---
+
+<BaseLayout title={`${project.data.title} — Rafael Sánchez Córdoba`} description={project.data.description}>
+  <Nav />
+
+  <main>
+    <section class="border-b border-rule">
+      <div class="max-w-2xl mx-auto px-6 py-12">
+        <p class="text-xs text-meta">{project.data.date.getFullYear()} · {statusLabel[project.data.status]}</p>
+        <h1 class="font-display font-extrabold text-4xl mt-2 max-w-[20ch]">{project.data.title}</h1>
+        <p class="text-secondary text-[15px] leading-relaxed max-w-[56ch] mt-4">{project.data.description}</p>
+
+        <Image
+          src={project.data.cover}
+          alt={project.data.coverAlt}
+          class="w-full aspect-[16/9] object-cover mt-8"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 672px) 672px, 100vw"
+        />
+      </div>
+    </section>
+
+    <section>
+      <div class="max-w-2xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-[1fr_200px] gap-10">
+        <article class="prose-project min-w-0">
+          <Content />
+        </article>
+
+        <aside class="text-[13.5px] border-t md:border-t-0 md:border-l border-rule pt-6 md:pt-0 md:pl-8">
+          <dl class="space-y-5">
+            <div>
+              <dt class="text-[11px] tracking-[0.13em] uppercase text-meta">Stack</dt>
+              <dd class="mt-1.5 text-secondary">{project.data.tech.join(', ')}</dd>
+            </div>
+            {project.data.github && (
+              <div>
+                <dt class="text-[11px] tracking-[0.13em] uppercase text-meta">Code</dt>
+                <dd class="mt-1.5"><a href={project.data.github} class="text-accent">GitHub →</a></dd>
+              </div>
+            )}
+            {project.data.demo && (
+              <div>
+                <dt class="text-[11px] tracking-[0.13em] uppercase text-meta">Demo</dt>
+                <dd class="mt-1.5"><a href={project.data.demo} class="text-accent">Live →</a></dd>
+              </div>
+            )}
+          </dl>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

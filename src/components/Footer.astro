@@ -1,0 +1,10 @@
+---
+import { profile } from '../data/cv.ts';
+---
+
+<footer>
+  <div class="max-w-2xl mx-auto px-6 py-5 flex text-xs text-meta">
+    <span>{profile.location}</span>
+    <a href={`mailto:${profile.email}`} class="ml-auto text-accent">{profile.email}</a>
+  </div>
+</footer>

@@ -1,0 +1,12 @@
+---
+interface Props {
+  years: string;
+}
+
+const { years } = Astro.props;
+---
+
+<div class="grid grid-cols-[96px_minmax(0,1fr)] gap-x-6 py-[1.15rem] border-t border-rule-soft first:border-t-0">
+  <span class="text-xs text-meta tabular-nums pt-1">{years}</span>
+  <div><slot /></div>
+</div>

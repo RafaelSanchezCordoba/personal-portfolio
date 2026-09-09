@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+const allProjects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const types = [...new Set(allProjects.map((p) => p.data.type))];
+
+const statusLabel: Record<string, string> = {
+  completed: 'Completed',
+  'in-progress': 'In progress',
+  archived: 'Archived',
+};
+---
+
+<BaseLayout title="Projects — Rafael Sánchez Córdoba" description="Case studies: the problem, the decisions, and what shipped.">
+  <Nav />
+
+  <main>
+    <section class="border-b border-rule">
+      <div class="max-w-2xl mx-auto px-6 py-12">
+        <h1 class="font-display font-extrabold text-[34px]">Projects</h1>
+        <p class="text-secondary text-[14.5px] leading-relaxed max-w-[50ch] mt-3">
+          Each one documented with the problem, the technical decisions, and what was learned.
+        </p>
+
+        <div class="flex gap-5 mt-7 pb-3.5 border-b border-rule text-xs" data-filters>
+          <button type="button" class="text-ink border-b border-accent pb-[3px]" data-filter="all">All</button>
+          {types.map((type) => (
+            <button type="button" class="text-meta" data-filter={type}>
+              {type[0].toUpperCase() + type.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-8 gap-y-9 mt-8" data-grid>
+          {allProjects.map((project) => (
+            <a href={`/projects/${project.id}`} class="block" data-card data-type={project.data.type}>
+              <Image
+                src={project.data.cover}
+                alt={project.data.coverAlt}
+                class="w-full aspect-[4/3] object-cover"
+                widths={[320, 480, 640]}
+                sizes="(min-width: 640px) 320px, 100vw"
+              />
+              <p class="font-display font-medium text-[17px] mt-3.5">{project.data.title}</p>
+              <p class="text-[12.5px] text-muted mt-1">{project.data.tech.join(' · ')}</p>
+              <p class="text-xs text-meta mt-2">
+                {project.data.date.getFullYear()} · {statusLabel[project.data.status]}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-card]');
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.filter;
+
+      buttons.forEach((b) => {
+        b.classList.toggle('text-ink', b === button);
+        b.classList.toggle('border-b', b === button);
+        b.classList.toggle('border-accent', b === button);
+        b.classList.toggle('pb-[3px]', b === button);
+        b.classList.toggle('text-meta', b !== button);
+      });
+
+      cards.forEach((card) => {
+        const matches = filter === 'all' || card.dataset.type === filter;
+        card.classList.toggle('hidden', !matches);
+      });
+    });
+  });
+</script>
