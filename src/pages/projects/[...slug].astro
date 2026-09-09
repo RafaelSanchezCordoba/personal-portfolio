@@ -27,8 +27,8 @@ const statusLabel: Record<string, string> = {
   <Nav />
 
   <main class="flex-1">
-    <section class="border-b border-rule">
-      <div class="max-w-3xl mx-auto px-6 py-12">
+    <section>
+      <div class="max-w-3xl mx-auto px-6 py-8">
         <p class="text-xs text-meta">{project.data.date.getFullYear()} · {statusLabel[project.data.status]}</p>
         <h1 class="font-display font-extrabold text-4xl mt-2 max-w-[20ch]">{project.data.title}</h1>
         <p class="text-secondary text-[15px] leading-relaxed text-justify max-w-[56ch] mt-4">{project.data.description}</p>
@@ -41,7 +41,7 @@ const statusLabel: Record<string, string> = {
           sizes="(min-width: 672px) 672px, 100vw"
         />
 
-        <div class="flex flex-wrap gap-x-10 gap-y-4 border-t border-rule mt-8 pt-6 text-[13.5px]">
+        <div class="flex flex-wrap gap-x-10 gap-y-4 border-t border-b border-rule mt-8 py-6 text-[13.5px]">
           <div>
             <p class="text-[11px] tracking-[0.13em] uppercase text-meta">Stack</p>
             <p class="mt-1.5 text-secondary">{project.data.tech.join(', ')}</p>
