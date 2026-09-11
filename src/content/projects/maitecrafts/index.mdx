@@ -1,0 +1,158 @@
+---
+title: "Maitecrafts — a family workshop, organised"
+description: "A web application I built for my parents to track custom products, configure their production workflow, and connect online orders with the workshop."
+date: 2026-07-31
+status: completed
+type: software
+featured: true
+cover: ./assets/cover.svg
+coverAlt: "Concept illustration of a production board with fictional orders, not an application screenshot."
+tech: ["Next.js", "React", "TypeScript", "PostgreSQL", "Prisma", "TanStack Query", "Tailwind CSS"]
+github: "https://github.com/RafaelSanchezCordoba/maitecrafs-production"
+draft: false
+---
+
+import architectureUrl from "./assets/architecture.svg?url";
+import dataModelUrl from "./assets/data-model.svg?url";
+import stateChangeUrl from "./assets/state-change.svg?url";
+
+## Software for the people doing the work
+
+I built Maitecrafts for my parents’ workshop, where they make personalised T-shirts, mugs and other custom products. The aim was practical: give them a shared place to see what needs doing and how far each product has progressed.
+
+A single order can contain several products with different production needs. A mug might be ready while a T-shirt is still being printed. That distinction shaped the application: progress belongs to each product line, while the order brings the work together.
+
+**My role:** full-stack development, covering the data model, production interface, administration tools and integrations.
+
+## From an order to a shared production board
+
+The application centres on a Kanban board. On larger screens, orders appear in columns and can be dragged between stages. On mobile, the same information becomes a vertical list grouped by stage, with buttons to move products forward or back.
+
+An order appears in the column of its **least advanced product**. This makes unfinished work visible even when some of the order is already ready. Variants sharing a design can be grouped visually and moved together, while keeping their individual records.
+
+Around that board, the application includes:
+
+- Order creation and editing, quantities, delivery dates, notes and reference photos.
+- Search, delivery-date filters and saved filters for recurring views.
+- An administration panel for production stages, product types, fields and notification rules.
+- A separate design catalogue for photos and reusable cutting notes.
+- WooCommerce order imports and WhatsApp notifications.
+
+The cover is a concept illustration with sample data. The diagrams below describe the implementation rather than showing live customer orders.
+
+## A compact architecture
+
+Next.js brings the React interface and server-side application logic into one project. Prisma provides access to PostgreSQL, while photos and messages use separate storage and notification modules.
+
+<figure>
+  <a href={architectureUrl} target="_blank" rel="noreferrer">
+    <img src={architectureUrl} alt="Architecture: the workshop browser calls Next.js, which accesses PostgreSQL and integrates with WooCommerce, image storage and WhatsApp." loading="lazy" />
+  </a>
+  <figcaption><a href={architectureUrl} target="_blank" rel="noreferrer">Open diagram at full size ↗</a></figcaption>
+</figure>
+
+This structure keeps a small internal tool manageable. Production rules live on the server and can be reused across entry points. For example, manual orders and WooCommerce imports both use `createOrderRecord`, instead of maintaining separate order-creation implementations.
+
+## Three decisions that shaped the application
+
+### 1. Keep the core relational and the workshop configurable
+
+Orders, product lines and production stages have explicit relationships. An order’s serial number is unique, and each product line references its current stage by ID.
+
+The parts that vary between products are more flexible. Administrators define fields such as size, colour or printing material, and their values are stored in JSON columns. Field definitions can apply to several product types. Stages and product types are also database records, so everyday configuration changes do not require a schema migration.
+
+<figure>
+  <a href={dataModelUrl} target="_blank" rel="noreferrer">
+    <img src={dataModelUrl} alt="Simplified data model: orders contain items, items reference stages and product types, and configurable field definitions describe their JSON attributes." loading="lazy" />
+  </a>
+  <figcaption><a href={dataModelUrl} target="_blank" rel="noreferrer">Open diagram at full size ↗</a></figcaption>
+</figure>
+
+The trade-off is that flexible data needs application-level interpretation and validation. The form helpers convert incoming values and check required fields; JSON does not provide the same database constraints as a dedicated column for every attribute. Some business rules still depend on specific field keys, so this is configurable software with workshop-specific conventions.
+
+### 2. Use polling suited to a small team
+
+The query provider refreshes data every four seconds and when the window regains focus. For a tool designed around two workshop users, this keeps synchronisation straightforward without introducing a separate real-time service.
+
+The current board waits for a mutation to finish, disables the relevant controls while it is pending, and then invalidates the cached Kanban query. Moving a design can affect multiple variants, so the client does not attempt to reproduce all those changes optimistically.
+
+This means updates are not instantaneous across devices. Polling also produces repeated reads, so the interval and data-fetching strategy would need revisiting if usage grew substantially.
+
+### 3. Treat progress as a business rule
+
+A product does not always need every stage. Configurable skip rules let the server resolve the next applicable stage for its printing material.
+
+Once the target is known, the product update and its history entry are written in one transaction. The following excerpt is taken from `applyStageChange`:
+
+```ts
+const updated = await prisma.$transaction(async (tx) => {
+  const updatedItem = await tx.orderItem.update({
+    where: { id: itemId },
+    data: { stageId: newStageId },
+  });
+  await tx.orderItemStatusHistory.create({
+    data: {
+      orderItemId: itemId,
+      fromStageId: item.stageId,
+      toStageId: newStageId,
+      changedById: userId,
+    },
+  });
+  return updatedItem;
+});
+```
+
+This keeps the movement and its audit record together. Notification checks and order-level timestamps run afterwards, outside that transaction.
+
+<figure>
+  <a href={stateChangeUrl} target="_blank" rel="noreferrer">
+    <img src={stateChangeUrl} alt="State change: validate the user, resolve the applicable stage, save the product and history in one transaction, then evaluate notifications and synchronise order timestamps." loading="lazy" />
+  </a>
+  <figcaption><a href={stateChangeUrl} target="_blank" rel="noreferrer">Open diagram at full size ↗</a></figcaption>
+</figure>
+
+The order’s delivery timestamp is derived from whether all its products have reached the final stage. Adding a new product or moving one backwards can clear that timestamp again. This avoids relying on a separate manual “complete order” action that could drift away from the products’ actual progress.
+
+## Connecting the shop to the workshop
+
+The WooCommerce endpoint accepts signed webhooks and imports orders whose status is `processing`. It verifies the signature against the raw request body before handling the payload.
+
+Repeated deliveries are handled using a stable order reference:
+
+```ts
+const serialNumber = `WOO-${payload.number}`;
+
+const existing = await prisma.order.findUnique({ where: { serialNumber } });
+if (existing) {
+  return NextResponse.json({ ok: true, skipped: "duplicate" });
+}
+```
+
+That initial check is backed by a unique database constraint. If two deliveries race, the error handler checks whether the order now exists and acknowledges the duplicate. SKU and attribute mappings translate shop products into the workshop’s model; unmapped SKUs trigger an administrator notification for review.
+
+WhatsApp messages go through a small provider adapter. Delivery errors are caught so a failed message does not undo a saved production change. The current implementation awaits delivery attempts and has no durable retry queue: it is best-effort notification delivery.
+
+## Small details that matter in daily use
+
+Phone photos are resized in the browser before upload, using native image and canvas APIs. The default maximum dimension is 1,600 pixels, with JPEG quality set to 0.75. This addresses upload size without adding an image-processing dependency to the client.
+
+Google sign-in provides authentication. Server-side helpers check the session and enforce administrator roles for restricted operations such as configuration changes. The board’s navigation controls are also disabled during relevant pending mutations to reduce accidental repeated actions.
+
+The design catalogue addresses another workshop need: keeping reference images and cutting notes together. It remains independent of orders, so a useful design reference does not have to belong to a particular sale.
+
+## What this project demonstrates
+
+Maitecrafts brings order tracking, configurable production steps, design references and shop integration into one application built around a concrete family-business need.
+
+The engineering work is in translating that workflow into consistent behaviour: product-level progress, derived order status, shared creation logic and configurable attributes with a stable relational core.
+
+I have not attached time-saving or error-reduction figures to this case study because those outcomes have not been measured. The next improvements I would prioritise are automated coverage for stage transitions and duplicate webhooks, stronger concurrency guarantees for grouped movements, and a durable notification queue if message delivery becomes operationally critical.
+
+## Implementation references
+
+These links point to the source revision used for this case study:
+
+- [Data model and configurable fields](https://github.com/RafaelSanchezCordoba/maitecrafs-production/blob/073b60c7b2f7e7a1ba3cfa4378de23d0027637e8/prisma/schema.prisma)
+- [Kanban interactions and cache refresh](https://github.com/RafaelSanchezCordoba/maitecrafs-production/blob/073b60c7b2f7e7a1ba3cfa4378de23d0027637e8/components/kanban/KanbanBoard.tsx)
+- [Production transitions and history](https://github.com/RafaelSanchezCordoba/maitecrafs-production/blob/073b60c7b2f7e7a1ba3cfa4378de23d0027637e8/lib/order-items.ts)
+- [WooCommerce webhook handling](https://github.com/RafaelSanchezCordoba/maitecrafs-production/blob/073b60c7b2f7e7a1ba3cfa4378de23d0027637e8/app/api/webhooks/woocommerce/route.ts)
