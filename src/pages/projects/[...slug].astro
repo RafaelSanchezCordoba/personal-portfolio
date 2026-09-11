@@ -31,7 +31,7 @@ const statusLabel: Record<string, string> = {
       <div class="max-w-3xl mx-auto px-6 pt-12">
         <p class="text-xs text-meta">{project.data.date.getFullYear()} · {statusLabel[project.data.status]}</p>
         <h1 class="font-display font-extrabold text-4xl mt-2 max-w-[20ch]">{project.data.title}</h1>
-        <p class="text-secondary text-[15px] leading-relaxed text-justify max-w-[56ch] mt-4">{project.data.description}</p>
+        <p class="text-secondary text-[15px] leading-relaxed text-left sm:text-justify max-w-[56ch] mt-4">{project.data.description}</p>
 
         <Image
           src={project.data.cover}

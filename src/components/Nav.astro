@@ -5,9 +5,9 @@ const path = Astro.url.pathname;
 ---
 
 <header class="bg-nav border-b border-rule">
-  <div class="max-w-3xl mx-auto px-6 py-4 flex items-center">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center">
     <a href="/" class="font-display font-extrabold text-sm">rs</a>
-    <nav class="ml-auto flex items-center gap-6 text-sm text-secondary">
+    <nav class="ml-auto flex items-center gap-3 sm:gap-6 text-xs sm:text-sm text-secondary">
       <a href="/" class={path === '/' ? 'text-ink' : ''}>Home</a>
       <a href="/projects" class={path.startsWith('/projects') ? 'text-ink' : ''}>Projects</a>
       <a href={profile.cvPdfHref}>Resume</a>

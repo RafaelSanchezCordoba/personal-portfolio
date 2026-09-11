@@ -29,7 +29,7 @@ const statusLabel: Record<string, string> = {
           Each one documented with the problem, the technical decisions, and what was learned.
         </p>
 
-        <div class="flex gap-5 mt-7 pb-3.5 border-b border-rule text-xs" data-filters>
+        <div class="flex gap-5 mt-7 pb-3.5 border-b border-rule text-xs overflow-x-auto whitespace-nowrap" data-filters>
           <button type="button" class="text-ink border-b border-accent pb-[3px]" data-filter="all">All</button>
           {types.map((type) => (
             <button type="button" class="text-meta" data-filter={type}>

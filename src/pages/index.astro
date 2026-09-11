@@ -39,7 +39,7 @@ const featured = allProjects
         <p class="text-secondary text-[15px] leading-relaxed max-w-[62ch] mx-auto mt-6">
           {profile.summary}
         </p>
-        <div class="flex gap-2.5 justify-center mt-7 text-[13.5px]">
+        <div class="flex flex-wrap gap-2.5 justify-center mt-7 text-[13.5px]">
           <a href="/projects" class="bg-ink text-paper px-[18px] py-[9px]">View projects</a>
           <a href={profile.cvPdfHref} class="border border-rule-soft px-[18px] py-[9px]">Download CV</a>
         </div>
@@ -57,7 +57,7 @@ const featured = allProjects
               {e.description && e.description.length > 0 && (
                 <ul class="mt-[7px] space-y-1.5 list-disc pl-[1.1em]">
                   {e.description.map((line) => (
-                    <li class="text-[13.5px] leading-relaxed text-justify text-secondary">{line}</li>
+                    <li class="text-[13.5px] leading-relaxed text-left sm:text-justify text-secondary">{line}</li>
                   ))}
                 </ul>
               )}
@@ -75,7 +75,7 @@ const featured = allProjects
             <Row years={e.years}>
               <p class="font-display font-medium text-[16px]">{e.program}</p>
               <p class="text-[13px] text-muted mt-0.5">{e.org}</p>
-              {e.description && <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[7px]">{e.description}</p>}
+              {e.description && <p class="text-[13.5px] leading-relaxed text-left sm:text-justify text-secondary mt-[7px]">{e.description}</p>}
             </Row>
           ))}
         </div>
@@ -95,7 +95,7 @@ const featured = allProjects
                 <a href={`/projects/${project.id}`} class="group flex items-baseline gap-3">
                   <div class="min-w-0">
                     <p class="font-display font-extrabold text-[21px]">{project.data.title}</p>
-                    <p class="text-[13.5px] leading-relaxed text-justify text-secondary mt-[5px]">{project.data.description}</p>
+                    <p class="text-[13.5px] leading-relaxed text-left sm:text-justify text-secondary mt-[5px]">{project.data.description}</p>
                   </div>
                   <span class="text-accent text-[16px] ml-auto group-hover:translate-x-0.5 transition-transform">→</span>
                 </a>
