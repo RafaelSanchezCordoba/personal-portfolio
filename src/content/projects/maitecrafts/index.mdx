@@ -5,13 +5,19 @@ date: 2026-07-31
 status: completed
 type: software
 featured: true
-cover: ./assets/cover.svg
-coverAlt: "Concept illustration of a production board with fictional orders, not an application screenshot."
+cover: ./assets/board.png
+coverAlt: "Production board in Spanish, edited from a real screenshot with fictional sample data."
 tech: ["Next.js", "React", "TypeScript", "PostgreSQL", "Prisma", "TanStack Query", "Tailwind CSS"]
 github: "https://github.com/RafaelSanchezCordoba/maitecrafs-production"
 draft: false
 ---
 
+import { Image } from "astro:assets";
+import orderImage from "./assets/order.png";
+import archiveImage from "./assets/archive.png";
+import designsImage from "./assets/designs.png";
+import adminImage from "./assets/admin-stages.png";
+import boardImage from "./assets/board.png";
 import architectureUrl from "./assets/architecture.svg?url";
 import dataModelUrl from "./assets/data-model.svg?url";
 import stateChangeUrl from "./assets/state-change.svg?url";
@@ -38,15 +44,24 @@ Around that board, the application includes:
 - A separate design catalogue for photos and reusable cutting notes.
 - WooCommerce order imports and WhatsApp notifications.
 
-The cover is a concept illustration with sample data. The diagrams below describe the implementation rather than showing live customer orders.
+My parents use the application in production. Its interface is in Spanish because that is the language they use in the workshop. The screenshots here were edited from the real interface: customer details, order references and product artwork have been replaced with fictional examples.
+
+<a href={boardImage.src} target="_blank" rel="noreferrer">Open the production board at full size ↗</a>
+
+<figure style={{maxWidth: "430px", marginInline: "auto"}}>
+  <a href={orderImage.src} target="_blank" rel="noreferrer">
+    <Image src={orderImage} alt="Spanish order detail with fictional order DEMO-1001, product attributes, reference photo, notes and stage controls." widths={[430, 860]} sizes="(min-width: 478px) 430px, calc(100vw - 48px)" loading="lazy" />
+  </a>
+  <figcaption>Order detail: product attributes, reference photos and production controls in one view. Edited screenshot with sample data.</figcaption>
+</figure>
 
 ## A compact architecture
 
-Next.js brings the React interface and server-side application logic into one project. Prisma provides access to PostgreSQL, while photos and messages use separate storage and notification modules.
+Next.js brings the React interface and server-side application logic into one project. The repository documents deployment on Vercel, with PostgreSQL on Neon and Vercel Blob for photos. The service diagram shows these hosting boundaries alongside Google sign-in, WooCommerce and WhatsApp integration.
 
 <figure>
   <a href={architectureUrl} target="_blank" rel="noreferrer">
-    <img src={architectureUrl} alt="Architecture: the workshop browser calls Next.js, which accesses PostgreSQL and integrates with WooCommerce, image storage and WhatsApp." loading="lazy" />
+    <img src={architectureUrl} alt="Service architecture showing Vercel, Next.js, Prisma, Neon PostgreSQL, Google OAuth, Vercel Blob, WooCommerce and CallMeBot for WhatsApp." loading="lazy" />
   </a>
   <figcaption><a href={architectureUrl} target="_blank" rel="noreferrer">Open diagram at full size ↗</a></figcaption>
 </figure>
@@ -63,12 +78,19 @@ The parts that vary between products are more flexible. Administrators define fi
 
 <figure>
   <a href={dataModelUrl} target="_blank" rel="noreferrer">
-    <img src={dataModelUrl} alt="Simplified data model: orders contain items, items reference stages and product types, and configurable field definitions describe their JSON attributes." loading="lazy" />
+    <img src={dataModelUrl} alt="Entity-relationship diagram with database tables, selected columns, primary and foreign keys, and crow’s-foot cardinalities." loading="lazy" />
   </a>
   <figcaption><a href={dataModelUrl} target="_blank" rel="noreferrer">Open diagram at full size ↗</a></figcaption>
 </figure>
 
 The trade-off is that flexible data needs application-level interpretation and validation. The form helpers convert incoming values and check required fields; JSON does not provide the same database constraints as a dedicated column for every attribute. Some business rules still depend on specific field keys, so this is configurable software with workshop-specific conventions.
+
+<figure style={{maxWidth: "430px", marginInline: "auto"}}>
+  <a href={adminImage.src} target="_blank" rel="noreferrer">
+    <Image src={adminImage} alt="Spanish admin interface for reordering production stages and choosing which printing methods skip a stage." widths={[430, 860]} sizes="(min-width: 478px) 430px, calc(100vw - 48px)" loading="lazy" />
+  </a>
+  <figcaption>The actual stage configuration screen. Here, DTF products skip the plotting stage; the workflow is configured through the interface.</figcaption>
+</figure>
 
 ### 2. Use polling suited to a small team
 
@@ -106,7 +128,7 @@ This keeps the movement and its audit record together. Notification checks and o
 
 <figure>
   <a href={stateChangeUrl} target="_blank" rel="noreferrer">
-    <img src={stateChangeUrl} alt="State change: validate the user, resolve the applicable stage, save the product and history in one transaction, then evaluate notifications and synchronise order timestamps." loading="lazy" />
+    <img src={stateChangeUrl} alt="UML sequence diagram showing browser, Server Action, database and notification lifelines, with the transaction boundary before notifications and order timestamp updates." loading="lazy" />
   </a>
   <figcaption><a href={stateChangeUrl} target="_blank" rel="noreferrer">Open diagram at full size ↗</a></figcaption>
 </figure>
@@ -139,6 +161,22 @@ Phone photos are resized in the browser before upload, using native image and ca
 Google sign-in provides authentication. Server-side helpers check the session and enforce administrator roles for restricted operations such as configuration changes. The board’s navigation controls are also disabled during relevant pending mutations to reduce accidental repeated actions.
 
 The design catalogue addresses another workshop need: keeping reference images and cutting notes together. It remains independent of orders, so a useful design reference does not have to belong to a particular sale.
+
+<figure>
+  <a href={designsImage.src} target="_blank" rel="noreferrer">
+    <Image src={designsImage} alt="Spanish design catalogue with a fictional mountain T-shirt and reusable vinyl cutting notes." widths={[640, 960, 1280]} sizes="(min-width: 768px) 720px, calc(100vw - 48px)" loading="lazy" />
+  </a>
+  <figcaption>Reusable cutting notes remain available independently of individual orders. Edited screenshot with sample artwork.</figcaption>
+</figure>
+
+Completed work can leave the active board without being deleted. An administrator chooses a production stage and an archiving delay; the application determines which orders belong in the archive when reading the data, without relying on a scheduled cleanup job.
+
+<figure style={{maxWidth: "430px", marginInline: "auto"}}>
+  <a href={archiveImage.src} target="_blank" rel="noreferrer">
+    <Image src={archiveImage} alt="Archived orders in Spanish with fictional DEMO references and example customer labels." widths={[430, 860]} sizes="(min-width: 478px) 430px, calc(100vw - 48px)" loading="lazy" />
+  </a>
+  <figcaption>Archived orders remain accessible while keeping the active board focused on current work. Edited screenshot with sample data.</figcaption>
+</figure>
 
 ## What this project demonstrates
 
