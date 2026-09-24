@@ -25,3 +25,12 @@ pnpm-debug.log*
 
 # planning doc — not part of the site, mentions unreleased work
 context.md
+
+# Terraform (lives on the aws-deployment branch; never commit state)
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
