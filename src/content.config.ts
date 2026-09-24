@@ -6,7 +6,8 @@ const TECH = [
   'Node.js', 'Python', 'Java', 'C#', '.NET',
   'PostgreSQL', 'Supabase', 'Prisma', 'SQL',
   'Power BI', 'DAX', 'Microsoft Fabric', 'Power Automate',
-  'AWS', 'S3', 'CloudFront', 'Terraform',
+  'AWS', 'S3', 'CloudFront', 'Terraform', 'IAM', 'ACM',
+  'GitHub Actions', 'Cloudflare',
   'Tailwind CSS', 'TanStack Query',
 ] as const;
 
