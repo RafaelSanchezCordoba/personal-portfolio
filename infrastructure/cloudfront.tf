@@ -39,7 +39,11 @@ resource "aws_cloudfront_distribution" "website" {
     }
   }
 
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
+    aliases = ["aws.rafasanchez.dev"]
+
+    viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate.website.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+    }
 }
