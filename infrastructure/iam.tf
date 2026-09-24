@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values   = [
-        "repo:RafaelSanchezCordoba/personal-portfolio:ref:refs/heads/aws-deployment"
+        "repo:RafaelSanchezCordoba@53056368/personal-portfolio@1362535609:*"
       ]
     }
   }
