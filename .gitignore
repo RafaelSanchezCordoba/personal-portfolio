@@ -25,3 +25,14 @@ pnpm-debug.log*
 
 # planning doc — not part of the site, mentions unreleased work
 context.md
+
+# Terrafrom
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Terraform variable files
+*.tfvars
+*.tfvars.json
